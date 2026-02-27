@@ -23,7 +23,20 @@ export async function POST(request: Request) {
 
     const { username, password ,turnstileToken} = authSchema.parse(json);
 
+    console.log('[Register] 开始验证 Turnstile:', {
+      hasToken: !!turnstileToken,
+      tokenLength: turnstileToken?.length,
+      username,
+    });
+
     const verification = await verifyTurnstileToken(turnstileToken);
+
+    console.log('[Register] Turnstile 验证结果:', {
+      success: verification.success,
+      reason: verification.reason,
+      username,
+    });
+
     if (!verification.success) {
       const message = verification.reason === "missing-token"
         ? "请先完成安全验证"

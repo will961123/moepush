@@ -47,8 +47,20 @@ export const {
 
                     const { username, password, turnstileToken } = credentials
 
+                    console.log('[Login] 开始验证 Turnstile:', {
+                      turnstileToken,
+                      username,
+                    });
+
                     // 验证 Turnstile token
                     const verification = await verifyTurnstileToken(turnstileToken as string | undefined);
+
+                    console.log('[Login] Turnstile 验证结果:', {
+                        success: verification.success,
+                        reason: verification.reason,
+                        username,
+                    });
+
                     if (!verification.success) {
                         const message = verification.reason === "missing-token"
                             ? "请先完成安全验证"

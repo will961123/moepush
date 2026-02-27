@@ -50,6 +50,9 @@ ENV AUTH_GITHUB_ID ""
 ENV AUTH_GITHUB_SECRET ""
 ENV DISABLE_CREDENTIALS_REGISTER false
 ENV DISABLE_GITHUB_REGISTER false
+ENV TURNSTILE_ENABLED false
+ENV TURNSTILE_SITE_KEY ""
+ENV TURNSTILE_SECRET_KEY ""
 
 # 创建启动脚本
 RUN echo '#!/bin/sh\n\
@@ -69,6 +72,15 @@ if [ ! -z "$DISABLE_CREDENTIALS_REGISTER" ]; then\n\
 fi\n\
 if [ ! -z "$DISABLE_GITHUB_REGISTER" ]; then\n\
   echo "DISABLE_GITHUB_REGISTER=$DISABLE_GITHUB_REGISTER" >> .env\n\
+fi\n\
+if [ ! -z "$TURNSTILE_ENABLED" ]; then\n\
+  echo "TURNSTILE_ENABLED=$TURNSTILE_ENABLED" >> .env\n\
+fi\n\
+if [ ! -z "$TURNSTILE_SITE_KEY" ]; then\n\
+  echo "TURNSTILE_SITE_KEY=$TURNSTILE_SITE_KEY" >> .env\n\
+fi\n\
+if [ ! -z "$TURNSTILE_SECRET_KEY" ]; then\n\
+  echo "TURNSTILE_SECRET_KEY=$TURNSTILE_SECRET_KEY" >> .env\n\
 fi\n\
 \n\
 # 初始化或者更新数据库\n\

@@ -9,12 +9,32 @@ import { Icons } from "@/components/icons";
 import { useToast } from "@/components/ui/use-toast";
 import { signIn } from "next-auth/react";
 import { GitHubButton } from "./github-button";
+import { Turnstile } from "./turnstile";
 
-export function LoginForm(props: React.HTMLAttributes<HTMLDivElement>) {
+interface TurnstileConfig {
+  enabled: boolean;
+  siteKey: string;
+}
+
+interface LoginFormProps extends React.HTMLAttributes<HTMLDivElement> {
+  turnstile?: TurnstileConfig;
+}
+
+export function LoginForm({ turnstile, ...props }: LoginFormProps) {
   const { toast } = useToast();
   const router = useRouter();
   const searchParams = useSearchParams();
   const [isLoading, setIsLoading] = React.useState<boolean>(false);
+  const [turnstileToken, setTurnstileToken] = React.useState("");
+  const [turnstileResetCounter, setTurnstileResetCounter] = React.useState(0);
+
+  const turnstileSiteKey = turnstile?.siteKey ?? "";
+  const turnstileEnabled = Boolean((turnstile?.enabled === true || turnstile?.enabled === "true") && turnstileSiteKey);
+
+  const resetTurnstile = React.useCallback(() => {
+    setTurnstileToken("");
+    setTurnstileResetCounter((prev) => prev + 1);
+  }, []);
 
   // 处理 URL 中的错误参数
   React.useEffect(() => {
@@ -45,6 +65,17 @@ export function LoginForm(props: React.HTMLAttributes<HTMLDivElement>) {
 
   async function onSubmit(event: React.SyntheticEvent) {
     event.preventDefault();
+
+    // 检查 Turnstile 验证
+    if (turnstileEnabled && !turnstileToken) {
+      toast({
+        title: "验证失败",
+        description: "请先完成安全验证",
+        variant: "destructive",
+      });
+      return;
+    }
+
     setIsLoading(true);
 
     const target = event.target as typeof event.target & {
@@ -56,6 +87,7 @@ export function LoginForm(props: React.HTMLAttributes<HTMLDivElement>) {
       const result = await signIn("credentials", {
         username: target.username.value,
         password: target.password.value,
+        turnstileToken,
         redirect: false,
       });
 
@@ -72,6 +104,7 @@ export function LoginForm(props: React.HTMLAttributes<HTMLDivElement>) {
         description: error instanceof Error ? error.message : "请稍后重试",
         variant: "destructive",
       });
+      resetTurnstile();
     } finally {
       setIsLoading(false);
     }
@@ -114,6 +147,14 @@ export function LoginForm(props: React.HTMLAttributes<HTMLDivElement>) {
           </Button>
         </div>
       </form>
+      {turnstileEnabled && turnstileSiteKey && (
+        <Turnstile
+          siteKey={turnstileSiteKey}
+          onVerify={setTurnstileToken}
+          onExpire={resetTurnstile}
+          resetSignal={turnstileResetCounter}
+        />
+      )}
       <div className="relative">
         <div className="absolute inset-0 flex items-center">
           <span className="w-full border-t" />

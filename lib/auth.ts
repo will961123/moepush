@@ -8,6 +8,7 @@ import { users, accounts } from "@/lib/db/schema";
 import { authSchema } from "./validation";
 import { comparePassword } from "./utils";
 import { generateAvatarUrl } from "./avatar";
+import { verifyTurnstileToken } from "./turnstile";
 
 export const {
     handlers: { GET, POST },
@@ -37,16 +38,26 @@ export const {
                 credentials: {
                     username: { label: "用户名", type: "text", placeholder: "请输入用户名" },
                     password: { label: "密码", type: "password", placeholder: "请输入密码" },
+                    turnstileToken: { label: "Turnstile Token", type: "text" },
                 },
                 async authorize(credentials) {
                     if (!credentials) {
                         throw new Error("请输入用户名和密码")
                     }
 
-                    const { username, password } = credentials
+                    const { username, password, turnstileToken } = credentials
+
+                    // 验证 Turnstile token
+                    const verification = await verifyTurnstileToken(turnstileToken as string | undefined);
+                    if (!verification.success) {
+                        const message = verification.reason === "missing-token"
+                            ? "请先完成安全验证"
+                            : "安全验证未通过";
+                        throw new Error(message);
+                    }
 
                     try {
-                        authSchema.parse({ username, password })
+                        authSchema.parse({ username, password ,turnstileToken})
                         // eslint-disable-next-line @typescript-eslint/no-unused-vars
                     } catch (error) {
                         throw new Error("输入格式不正确")

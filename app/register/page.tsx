@@ -2,6 +2,7 @@ import { Metadata } from "next";
 import Link from "next/link";
 import { RegisterForm } from "@/components/auth/register-form";
 import { GitHubButton } from "@/components/auth/github-button";
+import { getTurnstileConfig } from "@/lib/turnstile";
 
 export const metadata: Metadata = {
   title: "注册 - MoePush",
@@ -9,6 +10,7 @@ export const metadata: Metadata = {
 };
 
 export default function RegisterPage() {
+  const turnstileConfig = getTurnstileConfig();
   return (
     <div className="container relative min-h-screen flex-col items-center justify-center grid lg:max-w-none lg:grid-cols-2 lg:px-0">
       <div className="relative hidden h-full flex-col bg-muted p-10 text-white lg:flex">
@@ -37,7 +39,7 @@ export default function RegisterPage() {
           </div>
           <div className="grid gap-6">
             <div className="grid gap-2">
-              <RegisterForm />
+              <RegisterForm turnstile={turnstileConfig} />
             </div>
             <div className="relative">
               <div className="absolute inset-0 flex items-center">

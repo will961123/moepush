@@ -7,16 +7,35 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Icons } from "@/components/icons";
 import { useToast } from "@/components/ui/use-toast";
+import { Turnstile } from "./turnstile";
 // import { signIn } from "next-auth/react";
 
-export function RegisterForm(props: React.HTMLAttributes<HTMLDivElement>) {
+interface TurnstileConfig {
+  enabled: boolean;
+  siteKey: string;
+}
+
+interface RegisterFormProps extends React.HTMLAttributes<HTMLDivElement> {
+  turnstile?: TurnstileConfig;
+}
+
+export function RegisterForm({ turnstile, ...props }: RegisterFormProps) {
   const { toast } = useToast();
   const router = useRouter();
   const [isLoading, setIsLoading] = React.useState<boolean>(false);
+  const [turnstileToken, setTurnstileToken] = React.useState("");
+  const [turnstileResetCounter, setTurnstileResetCounter] = React.useState(0);
+
+  const turnstileSiteKey = turnstile?.siteKey ?? "";
+  const turnstileEnabled = Boolean(turnstile?.enabled && turnstileSiteKey);
+
+  const resetTurnstile = React.useCallback(() => {
+    setTurnstileToken("");
+    setTurnstileResetCounter((prev) => prev + 1);
+  }, []);
 
   async function onSubmit(event: React.SyntheticEvent) {
     event.preventDefault();
-    setIsLoading(true);
 
     const target = event.target as typeof event.target & {
       username: { value: string };
@@ -34,9 +53,20 @@ export function RegisterForm(props: React.HTMLAttributes<HTMLDivElement>) {
         description: "两次输入的密码不一致",
         variant: "destructive",
       });
-      setIsLoading(false);
       return;
     }
+
+    // 检查 Turnstile 验证
+    if (turnstileEnabled && !turnstileToken) {
+      toast({
+        title: "验证失败",
+        description: "请先完成安全验证",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsLoading(true);
 
     try {
       const response = await fetch("/api/register", {
@@ -47,6 +77,7 @@ export function RegisterForm(props: React.HTMLAttributes<HTMLDivElement>) {
         body: JSON.stringify({
           username,
           password,
+          turnstileToken,
         }),
       });
 
@@ -79,6 +110,7 @@ export function RegisterForm(props: React.HTMLAttributes<HTMLDivElement>) {
         description: error instanceof Error ? error.message : "请稍后重试",
         variant: "destructive",
       });
+      resetTurnstile();
     } finally {
       setIsLoading(false);
     }
@@ -135,6 +167,14 @@ export function RegisterForm(props: React.HTMLAttributes<HTMLDivElement>) {
           </Button>
         </div>
       </form>
+      {turnstileEnabled && turnstileSiteKey && (
+        <Turnstile
+          siteKey={turnstileSiteKey}
+          onVerify={setTurnstileToken}
+          onExpire={resetTurnstile}
+          resetSignal={turnstileResetCounter}
+        />
+      )}
     </div>
   );
 }

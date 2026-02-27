@@ -123,10 +123,18 @@ Channel 系统是项目的核心,采用面向对象的设计模式:
 - `AUTH_GITHUB_SECRET`: GitHub OAuth App Secret
 - `DISABLE_CREDENTIALS_REGISTER`: 是否禁用账号密码注册 (可选,默认 false)
 - `DISABLE_GITHUB_REGISTER`: 是否禁用 GitHub 注册 (可选,默认 false)
+- `TURNSTILE_ENABLED`: 是否启用 Cloudflare Turnstile 验证码 (可选,默认 false)
+- `TURNSTILE_SITE_KEY`: Cloudflare Turnstile Site Key (可选)
+- `TURNSTILE_SECRET_KEY`: Cloudflare Turnstile Secret Key (可选)
 
 注册控制说明:
 - `DISABLE_CREDENTIALS_REGISTER=true` 禁用账号密码注册
 - `DISABLE_GITHUB_REGISTER=true` 禁用 GitHub 新用户注册（已有用户仍可登录）
+
+Turnstile 验证码说明:
+- 启用后会在登录和注册页面显示 Cloudflare Turnstile 验证码
+- 需要在 Cloudflare Dashboard 创建 Turnstile 应用获取 Site Key 和 Secret Key
+- 如果未启用或配置不完整，验证会自动跳过
 
 ### 开发工作流
 

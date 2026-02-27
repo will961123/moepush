@@ -103,6 +103,7 @@ export function LoginForm(props: React.HTMLAttributes<HTMLDivElement>) {
               autoComplete="current-password"
               disabled={isLoading}
               required
+              minLength={8}
             />
           </div>
           <Button disabled={isLoading}>

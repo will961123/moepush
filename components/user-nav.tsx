@@ -50,8 +50,8 @@ export function UserNav({ user }: UserNavProps) {
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuItem
-          onClick={() => {
-            signOut({
+          onClick={async () => {
+            await signOut({
               redirect: false,
             })
             router.push("/")

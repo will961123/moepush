@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Icons } from "@/components/icons";
 import { useToast } from "@/components/ui/use-toast";
-import { signIn } from "next-auth/react";
+// import { signIn } from "next-auth/react";
 
 export function RegisterForm(props: React.HTMLAttributes<HTMLDivElement>) {
   const { toast } = useToast();
@@ -56,7 +56,6 @@ export function RegisterForm(props: React.HTMLAttributes<HTMLDivElement>) {
       }
 
       // 注册成功后跳转到登录页
-      // 原先的自动登录逻辑已注释
       // const result = await signIn("credentials", {
       //   username,
       //   password,
@@ -138,4 +137,4 @@ export function RegisterForm(props: React.HTMLAttributes<HTMLDivElement>) {
       </form>
     </div>
   );
-} 
+}

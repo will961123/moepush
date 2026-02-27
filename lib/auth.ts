@@ -23,6 +23,10 @@ export const {
         session: {
             strategy: "jwt",
         },
+        pages: {
+            signIn: "/login",
+            error: "/login",
+        },
         providers: [
             GithubProvider({
                 clientId: process.env.AUTH_GITHUB_ID!,

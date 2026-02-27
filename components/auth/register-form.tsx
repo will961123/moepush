@@ -55,23 +55,24 @@ export function RegisterForm(props: React.HTMLAttributes<HTMLDivElement>) {
         throw new Error(error.message);
       }
 
-      // 注册成功后直接登录
-      const result = await signIn("credentials", {
-        username,
-        password,
-        redirect: false,
-      });
-
-      if (result?.error) {
-        throw new Error("登录失败");
-      }
+      // 注册成功后跳转到登录页
+      // 原先的自动登录逻辑已注释
+      // const result = await signIn("credentials", {
+      //   username,
+      //   password,
+      //   redirect: false,
+      // });
+      //
+      // if (result?.error) {
+      //   throw new Error("登录失败");
+      // }
 
       toast({
         title: "注册成功",
-        description: "正在跳转...",
+        description: "请使用您的账号登录",
       });
 
-      router.push("/moe/endpoints");
+      router.push("/login");
       router.refresh();
     } catch (error) {
       toast({
@@ -107,12 +108,12 @@ export function RegisterForm(props: React.HTMLAttributes<HTMLDivElement>) {
             <Label htmlFor="password">密码</Label>
             <Input
               id="password"
-              placeholder="请输入密码"
+              placeholder="请输入密码（至少8位）"
               type="password"
               autoComplete="new-password"
               disabled={isLoading}
               required
-              minLength={6}
+              minLength={8}
             />
           </div>
           <div className="grid gap-1">
@@ -124,7 +125,7 @@ export function RegisterForm(props: React.HTMLAttributes<HTMLDivElement>) {
               autoComplete="new-password"
               disabled={isLoading}
               required
-              minLength={6}
+              minLength={8}
             />
           </div>
           <Button disabled={isLoading}>

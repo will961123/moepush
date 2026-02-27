@@ -16,6 +16,33 @@ export function LoginForm(props: React.HTMLAttributes<HTMLDivElement>) {
   const searchParams = useSearchParams();
   const [isLoading, setIsLoading] = React.useState<boolean>(false);
 
+  // 处理 URL 中的错误参数
+  React.useEffect(() => {
+    const error = searchParams.get("error");
+    if (error) {
+      let errorMessage = "登录失败，请稍后重试";
+
+      if (error === "AccessDenied") {
+        errorMessage = "注册已关闭，无法创建新账号";
+      } else if (error === "Configuration") {
+        errorMessage = "服务配置错误，请联系管理员";
+      } else if (error === "Verification") {
+        errorMessage = "验证失败，请重试";
+      }
+
+      toast({
+        title: "登录失败",
+        description: errorMessage,
+        variant: "destructive",
+      });
+
+      // 清除 URL 中的 error 参数
+      const newUrl = new URL(window.location.href);
+      newUrl.searchParams.delete("error");
+      router.replace(newUrl.pathname + newUrl.search);
+    }
+  }, [searchParams, toast, router]);
+
   async function onSubmit(event: React.SyntheticEvent) {
     event.preventDefault();
     setIsLoading(true);

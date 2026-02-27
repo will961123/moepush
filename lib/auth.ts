@@ -71,6 +71,46 @@ export const {
             })
         ],
         callbacks: {
+            async signIn({ user, account }) {
+                console.log('[SignIn] 登录尝试:', {
+                    userId: user.id,
+                    userName: user.name,
+                    userEmail: user.email,
+                    provider: account?.provider,
+                });
+
+                console.log('[SignIn] 环境变量:', {
+                    DISABLE_CREDENTIALS_REGISTER: process.env.DISABLE_CREDENTIALS_REGISTER,
+                    DISABLE_GITHUB_REGISTER: process.env.DISABLE_GITHUB_REGISTER,
+                });
+
+                // 检查是否禁用 GitHub 注册
+                if (account?.provider === "github" && process.env.DISABLE_GITHUB_REGISTER === "true") {
+                    console.log('[SignIn] GitHub 注册已禁用，检查用户是否已存在');
+
+                    // 检查用户是否已存在
+                    const db = getDb();
+                    const existingUser = await db.query.users.findFirst({
+                        where: eq(users.id, user.id as string),
+                    });
+
+                    console.log('[SignIn] 现有用户查询结果:', {
+                        found: !!existingUser,
+                        userId: existingUser?.id,
+                    });
+
+                    // 如果用户不存在，说明是新注册，拒绝登录
+                    if (!existingUser) {
+                        console.log('[SignIn] 拒绝新用户注册');
+                        return false;
+                    }
+
+                    console.log('[SignIn] 允许现有用户登录');
+                }
+
+                console.log('[SignIn] 登录成功');
+                return true;
+            },
             async session({ token, session }) {
                 if (token && session.user) {
                     session.user.id = token.id as string

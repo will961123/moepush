@@ -60,7 +60,8 @@ const createPagesSecret = () => {
         `AUTH_SECRET=${process.env.AUTH_SECRET}`,
         `AUTH_GITHUB_ID=${process.env.AUTH_GITHUB_ID}`,
         `AUTH_GITHUB_SECRET=${process.env.AUTH_GITHUB_SECRET}`,
-        `DISABLE_REGISTER=${process.env.DISABLE_REGISTER}`,
+        `DISABLE_CREDENTIALS_REGISTER=${process.env.DISABLE_CREDENTIALS_REGISTER}`,
+        `DISABLE_GITHUB_REGISTER=${process.env.DISABLE_GITHUB_REGISTER}`,
     ];
     fs.writeFileSync(envFilePath, envVariables.join('\n'));
     execSync(`wrangler pages secret bulk .env`);

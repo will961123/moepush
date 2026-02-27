@@ -8,9 +8,10 @@ import { hashPassword } from "@/lib/utils";
 export const runtime = "edge";
 
 export async function POST(request: Request) {
-  if (process.env.DISABLE_REGISTER === "true") {
+  // 检查是否禁用账号密码注册
+  if (process.env.DISABLE_CREDENTIALS_REGISTER === "true") {
     return NextResponse.json(
-      { message: "注册已关闭" },
+      { message: "账号密码注册已关闭" },
       { status: 403 }
     );
   }

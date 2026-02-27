@@ -48,7 +48,8 @@ ENV AUTH_TRUST_HOST true
 ENV AUTH_SECRET ""
 ENV AUTH_GITHUB_ID ""
 ENV AUTH_GITHUB_SECRET ""
-ENV DISABLE_REGISTER false
+ENV DISABLE_CREDENTIALS_REGISTER false
+ENV DISABLE_GITHUB_REGISTER false
 
 # 创建启动脚本
 RUN echo '#!/bin/sh\n\
@@ -63,8 +64,11 @@ fi\n\
 if [ ! -z "$AUTH_GITHUB_SECRET" ]; then\n\
   echo "AUTH_GITHUB_SECRET=$AUTH_GITHUB_SECRET" >> .env\n\
 fi\n\
-if [ ! -z "$DISABLE_REGISTER" ]; then\n\
-  echo "DISABLE_REGISTER=$DISABLE_REGISTER" >> .env\n\
+if [ ! -z "$DISABLE_CREDENTIALS_REGISTER" ]; then\n\
+  echo "DISABLE_CREDENTIALS_REGISTER=$DISABLE_CREDENTIALS_REGISTER" >> .env\n\
+fi\n\
+if [ ! -z "$DISABLE_GITHUB_REGISTER" ]; then\n\
+  echo "DISABLE_GITHUB_REGISTER=$DISABLE_GITHUB_REGISTER" >> .env\n\
 fi\n\
 \n\
 # 初始化或者更新数据库\n\

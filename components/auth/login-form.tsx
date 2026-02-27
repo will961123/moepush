@@ -29,7 +29,7 @@ export function LoginForm({ turnstile, ...props }: LoginFormProps) {
   const [turnstileResetCounter, setTurnstileResetCounter] = React.useState(0);
 
   const turnstileSiteKey = turnstile?.siteKey ?? "";
-  const turnstileEnabled = Boolean((turnstile?.enabled === true || turnstile?.enabled === "true") && turnstileSiteKey);
+  const turnstileEnabled = Boolean(turnstile?.enabled && turnstileSiteKey);
 
   const resetTurnstile = React.useCallback(() => {
     setTurnstileToken("");
@@ -168,4 +168,4 @@ export function LoginForm({ turnstile, ...props }: LoginFormProps) {
       <GitHubButton text="GitHub 登录" />
     </div>
   );
-} 
+}
